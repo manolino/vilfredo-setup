@@ -6,14 +6,14 @@ vilfredo-core
 
 This guide explains how to install Vilfredo on a virtual or physical dedicated server.
 It assumes that you run ``Debian/GNU Linux`` version ``Jessie`` (8.0 or 8.3).
-Note: All the following commands have to be executed as user "root".
+Note: All the following commands have to be executed as user ``root``.
 
 Server setup
 ============
 
 First of all, on some servers there could be the need to define partitions on LVM to take advantage of additional disk space.
 In this case, create partitions before proceeding with any other installation step.
-The following example assumes an empty partition is available at /dev/sda3 and three volumes have to be created:
+The following example assumes an empty partition is available at ``/dev/sda3`` and three volumes have to be created:
 
 .. code:: sh
 
@@ -29,9 +29,9 @@ The following example assumes an empty partition is available at /dev/sda3 and t
     # Then edit /etc/fstab and move existing folders or remove them
     reboot
 
-Now download all "vilfredo-setup" repository files to /home/vilfredo/vilfredo-setup
+Now download all ``vilfredo-setup`` repository files to ``/home/vilfredo/vilfredo-setup``
 
-Log in as "root" user and run the following commands:
+Log in as ``root`` user and run the following commands:
 
 .. code:: sh
 
@@ -39,7 +39,7 @@ Log in as "root" user and run the following commands:
     apt-get install vim
     dpkg-reconfigure locales
 
-and add the italian locale "it_IT.UTF-8" from the list displayed on the console, then specify it as default locale.
+and add the italian locale ``it_IT.UTF-8`` from the list displayed on the console, then specify it as default locale.
 Then enter the following commands:
 
 .. code:: sh
@@ -64,7 +64,7 @@ Then enter the following commands:
     adduser vilfredo
 
 confirming all questions and choosing a strong password.
-If you want to allow the "vilfredo" user executing commands with "sudo", edit the "/etc/group" file and place "vilfredo" after the line starting with "sudo".
+If you want to allow the ``vilfredo`` user executing commands with ``sudo``, edit the ``/etc/group`` file and place ``vilfredo`` after the line starting with ``sudo``.
 
 Database installation instructions
 ==================================
@@ -75,7 +75,10 @@ Before installing the application, create the MySQL database schema:
 
     # This assumes the "root" password has been stored in .my.cnf file
     mysql
-    DROP DATABASE IF EXISTS vilfredo;CREATE DATABASE vilfredo;USE vilfredo;SET NAMES UTF8;
+    DROP DATABASE IF EXISTS vilfredo;
+		CREATE DATABASE vilfredo;
+		USE vilfredo;
+		SET NAMES UTF8;
     SOURCE /home/vilfredo/vilfredo-setup/database.sql;
     # Replace "vilfredo_mysql_password" with your chosen "vilfredo" user MySQL password
     GRANT USAGE ON *.* TO 'vilfredo'@'localhost' IDENTIFIED BY PASSWORD 'vilfredo_mysql_password';
@@ -95,12 +98,9 @@ Download the Vilfredo source code and install it onto the server:
 
 The above could be configured as well as a cron job in order to always run the latest version of the software.
 
-You could save space on the server by deleting all ".git" subfolders:
+You could save space on the server by deleting all ``.git`` subfolders:
 
-    rm -r /home/vilfredo/vilfredo-client/.git
-    rm /home/vilfredo/vilfredo-client/.gitignore
-    rm -r /home/vilfredo/vilfredo-core/.git
-    rm /home/vilfredo/vilfredo-core/.gitignore
+    rm -r /home/vilfredo/vilfredo-client/.git /home/vilfredo/vilfredo-client/.gitignore /home/vilfredo/vilfredo-core/.git /home/vilfredo/vilfredo-core/.gitignore
 
 but this is not recommended. Not only you would not be able to post your changes, you couldn't also update website with latest repository changes!
 
@@ -147,14 +147,14 @@ then add some symbolic links in Vilfredo core pointing to static files and templ
     # Creates a file which will be later needed to access MySQL server
     # Replace ROOT_MYSQL_PASSWORD with your MySQL server "root" password
     cat > /root/.my.cnf <<EOF
-[mysql]
-user=root
-password=ROOT_MYSQL_PASSWORD
+    [mysql]
+    user=root
+    password=ROOT_MYSQL_PASSWORD
 
-[mysqldump]
-user=root
-password=ROOT_MYSQL_PASSWORD
-EOF
+    [mysqldump]
+    user=root
+    password=ROOT_MYSQL_PASSWORD
+    EOF
 
     chmod 600 /root/.my.cnf
     # Move configuration files to a centralized folder
@@ -215,7 +215,7 @@ Put the NGINX and UWSGI configuration files into place and restart services:
     service php5-fpm restart
     service nginx restart
 
-If the server has an assigned domain name, edit the "server_name" directive in the "/etc/nginx/sites-available/vilfredo.conf" file and enter it following "server_name", replacing "vilfredo.org". Also edit the "PROTOCOL" and "SITE_DOMAIN" directives in the "/etc/vilfredo/settings.cfg" as needed to suit your domain name (replacing https with http if SSL not supported) and restart services:
+If the server has an assigned domain name, edit the ``server_name`` directive in the ``/etc/nginx/sites-available/vilfredo.conf`` file and enter it following ``server_name``, replacing ``vilfredo.org``. Also edit the ``PROTOCOL`` and ``SITE_DOMAIN`` directives in the ``/etc/vilfredo/settings.cfg`` file as needed to suit your domain name (replacing ``https`` with ``http`` if SSL not supported) and restart services:
 
 .. code:: sh
 
@@ -223,18 +223,18 @@ If the server has an assigned domain name, edit the "server_name" directive in t
     service php5-fpm restart
     service nginx restart
 
-If you want to generate a SSL certificate for a different domain, refer to the "ssl-howto.txt" file.
+If you want to generate a SSL certificate for a different domain, refer to the ``ssl-howto.txt`` file.
 
 Moreover, you may edit the client configuration file named
 
     /etc/vilfredo/settings.js
 
-replacing VILFREDO_URL with your website URL and setting PROTOCOL to "http://" or "https://"
+replacing ``VILFREDO_URL`` with your website URL and setting ``PROTOCOL`` to "http://" or "https://"
 
-You should also edit the "/home/vilfredo/vilfredo-client/static/templates/analytics.template.html" file and replace "UA-XXXXXXXX-X" with your Google Analytics ID.
-Please note this file could cause JavaScript errors in some Vilfredo versions - in this case, just rename it to "/home/vilfredo/vilfredo-client/static/templates/analytics.template.html.old" to prevent the webserver from serving it.
+You should also edit the ``/home/vilfredo/vilfredo-client/static/templates/analytics.template.html`` file and replace ``UA-XXXXXXXX-X`` with your Google Analytics ID.
+Please note this file could cause JavaScript errors in some Vilfredo versions - in this case, just rename it to ``/home/vilfredo/vilfredo-client/static/templates/analytics.template.html.old`` to prevent the webserver from serving it.
 
-Now you should be able to access the Vilfredo installation by entering the server IP address into your browser location bar. There could be other issues to be solved - you might have a look at the "/var/log/vilfredo/vilfredo-vr.log" for more information.
+Now you should be able to access the Vilfredo installation by entering the server IP address into your browser location bar. There could be other issues to be solved - you might have a look at the ``/var/log/vilfredo/vilfredo-vr.log`` for more information.
 
 Mail server installation instructions
 =====================================
@@ -243,7 +243,7 @@ Vilfredo requires a working mail server to send email messages to users.
 To avoid messages being marked as spam by recipients, the server should support DKIM and SPF.
 DKIM is a sort of "digital signature" which is added to all email messages to ensure they had been originated by a server in the domain of the sender. A public-private key has to be generated on the server, then a dedicated daemon (for instance OpenDKIM) will take care of generating a digital signature using those keys, adding it to the message headers. The public key must also be added to a TXT record in the domain zone on DNS.
 SPF is used to specify the list of IP addresses and servers which are allowed sending messages from a given domain. It does not require generating public-private key pairs. Just add a TXT record in the domain zone on DNS specifying the list of servers and IP addresses.
-As always, feel free to replace "vilfredo.org" with your mail server domain name.
+As always, feel free to replace ``vilfredo.org`` with your mail server domain name.
 
 First of all, install Postfix and OpenDKIM on your server:
 
@@ -272,20 +272,20 @@ First of all, install Postfix and OpenDKIM on your server:
     service opendkim restart
     service postfix restart
 
-Now get the contents of the "/etc/dkim/keys/vilfredo.org/default.txt" file (or whatever, depending from the domain name chosen) and copy its contents to the domain zone file in the DNS.
+Now get the contents of the ``/etc/dkim/keys/vilfredo.org/default.txt`` file (or whatever, depending from the domain name chosen) and copy its contents to the domain zone file in the DNS.
 If you DNS is externally managed (you do not have access to the configuration files but only to a web-based interface):
 
 - add a new TXT type record
-- specify as name "default._domainkey"
+- specify as name ``default._domainkey``
 - enter the text between quotes as value (without any additional quotes!)
 
-If you want to send mail from a subdomain (for instance demo.vilfredo.org) do not forget to add the TXT record containing the DKIM key to the subdomain instead of the main domain!
+If you want to send mail from a subdomain (for instance ``demo.vilfredo.org``) do not forget to add the TXT record containing the DKIM key to the subdomain instead of the main domain!
 
-Moreover, ensure the /etc/hostname and /etc/mailname files contains the server domain name (for instance "vilfredo.org").
+Moreover, ensure the ``/etc/hostname`` and ``/etc/mailname`` files contains the server domain name (for instance ``vilfredo.org``).
 
-To avoid triggering SpamAssassin filter (rule "TVD_PH_SUBJ_ACCOUNTS_POST"), also ensure the subject of messages sent by Vilfredo does not match the following regular expression:
+To avoid triggering SpamAssassin filter (rule ``TVD_PH_SUBJ_ACCOUNTS_POST``), also ensure the subject of messages sent by Vilfredo does not match the following regular expression:
 
-/\b(?:(?:re-?)?activat[a-z]*| secure| verify| restore| flagged| limited| unusual| report| notif(?:y| ication)| suspen(?:d| ded| sion)| confirm[a-z]*) (?:[a-z_,-]+ )*?accounts?\b/i
+    /\b(?:(?:re-?)?activat[a-z]*| secure| verify| restore| flagged| limited| unusual| report| notif(?:y| ication)| suspen(?:d| ded| sion)| confirm[a-z]*) (?:[a-z_,-]+ )*?accounts?\b/i
 
 So it should be different from "Vilfredo - Activate Your Account".
 Please note other steps could be needed in order to circumvent spam filters.
@@ -297,7 +297,7 @@ To improve security of the server, you might limit users allowed to log in throu
 
     AllowUsers root user1 user2
 
-replacing user1 and user2 with other users allowed to log in.
+replacing ``user1`` and ``user2`` with other users allowed to log in.
 Then enter
 
 .. code:: sh
@@ -315,7 +315,9 @@ To create other instances of Vilfredo, enter
 
     /home/vilfredo/vilfredo-setup/scripts/makeinstance [name] [domain] [branch] [mysql database password]
 
-where [name] could be, for instance, "test", "nightly" or "demo", [domain] is the assigned domain name, [branch] is the GIT repository branch from where to download code (usually "master").
+where ``[name]`` could be, for instance, "test", "nightly" or "demo", ``[domain]`` is the assigned domain name, ``[branch]`` is the GIT repository branch from where to download code (usually "master").
+
 A system user will be created with the name specified, with its corresponding folder.
-An additional /etc/$NAME folder will be created, so this means the instance name cannot match existing folders in the system.
+An additional ``/etc/$NAME`` folder will be created, so this means the instance name cannot match existing folders in the system.
+
 The procedure will also create a new MySQL user with proper permissions and set up an empty database with the same name as the instance.
