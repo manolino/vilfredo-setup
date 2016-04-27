@@ -4,14 +4,14 @@
 vilfredo-core
 =============
 
-This guide explains how to install Vilfredo on a virtual or physical dedicated server.|br|
-It assumes that you run ``Debian/GNU Linux`` version ``Jessie`` (8.0 or 8.3).|br|
+This guide explains how to install Vilfredo on a virtual or physical dedicated server. |br|
+It assumes that you run ``Debian/GNU Linux`` version ``Jessie`` (8.0 or 8.3). |br|
 Note: All the following commands have to be executed as user ``root``.
 
 Server setup
 ============
 
-First of all, on some servers there could be the need to define partitions on LVM to take advantage of additional disk space.|br|
+First of all, on some servers there could be the need to define partitions on LVM to take advantage of additional disk space. |br|
 In this case, create partitions before proceeding with any other installation step.
 
 The following example assumes an empty partition is available at ``/dev/sda3`` and three volumes have to be created:
@@ -183,9 +183,9 @@ then add some symbolic links in Vilfredo core pointing to static files and templ
 Web server installation instructions
 ====================================
 
-We selected NGINX instead of other web servers because of its remarkable performance and low memory consumption.|br|
-The following instructions assume you're installing the actual www.vilfredo.org website.|br|
-This also features a PHPMyAdmin installation protected by an additional password.|br|
+We selected NGINX instead of other web servers because of its remarkable performance and low memory consumption. |br|
+The following instructions assume you're installing the actual www.vilfredo.org website. |br|
+This also features a PHPMyAdmin installation protected by an additional password. |br|
 Configuration will have to be trimmed down or expanded for different scenarios.
 
 .. code:: sh
@@ -319,7 +319,7 @@ To create other instances of Vilfredo, enter
 
     /home/vilfredo/vilfredo-setup/scripts/makeinstance [name] [domain] [branch] [mysql database password]
 
-where ``[name]`` could be, for instance, "test", "nightly" or "demo", ``[domain]`` is the assigned domain name, ``[branch]`` is the GIT repository branch from where to download code (usually "master").|br|
+where ``[name]`` could be, for instance, "test", "nightly" or "demo", ``[domain]`` is the assigned domain name, ``[branch]`` is the GIT repository branch from where to download code (usually "master"). |br| 
 A system user will be created with the name specified, with its corresponding folder.
 An additional ``/etc/$NAME`` folder will be created, so this means the instance name cannot match existing folders in the system.
 
