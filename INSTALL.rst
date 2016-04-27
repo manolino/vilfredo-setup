@@ -4,15 +4,16 @@
 vilfredo-core
 =============
 
-This guide explains how to install Vilfredo on a virtual or physical dedicated server.
-It assumes that you run ``Debian/GNU Linux`` version ``Jessie`` (8.0 or 8.3).
+This guide explains how to install Vilfredo on a virtual or physical dedicated server.|br|
+It assumes that you run ``Debian/GNU Linux`` version ``Jessie`` (8.0 or 8.3).|br|
 Note: All the following commands have to be executed as user ``root``.
 
 Server setup
 ============
 
-First of all, on some servers there could be the need to define partitions on LVM to take advantage of additional disk space.
+First of all, on some servers there could be the need to define partitions on LVM to take advantage of additional disk space.|br|
 In this case, create partitions before proceeding with any other installation step.
+
 The following example assumes an empty partition is available at ``/dev/sda3`` and three volumes have to be created:
 
 .. code:: sh
@@ -39,7 +40,7 @@ Log in as ``root`` user and run the following commands:
     apt-get install vim
     dpkg-reconfigure locales
 
-and add the italian locale ``it_IT.UTF-8`` from the list displayed on the console, then specify it as default locale.
+and add your locale from the list displayed on the console, then specify it as default.
 Then enter the following commands:
 
 .. code:: sh
@@ -76,9 +77,9 @@ Before installing the application, create the MySQL database schema:
     # This assumes the "root" password has been stored in .my.cnf file
     mysql
     DROP DATABASE IF EXISTS vilfredo;
-		CREATE DATABASE vilfredo;
-		USE vilfredo;
-		SET NAMES UTF8;
+    CREATE DATABASE vilfredo;
+    USE vilfredo;
+    SET NAMES UTF8;
     SOURCE /home/vilfredo/vilfredo-setup/database.sql;
     # Replace "vilfredo_mysql_password" with your chosen "vilfredo" user MySQL password
     GRANT USAGE ON *.* TO 'vilfredo'@'localhost' IDENTIFIED BY PASSWORD 'vilfredo_mysql_password';
@@ -182,7 +183,10 @@ then add some symbolic links in Vilfredo core pointing to static files and templ
 Web server installation instructions
 ====================================
 
-Put the NGINX and UWSGI configuration files into place and restart services:
+We selected NGINX instead of other web servers because of its remarkable performance and low memory consumption.|br|
+The following instructions assume you're installing the actual www.vilfredo.org website.|br|
+This also features a PHPMyAdmin installation protected by an additional password.|br|
+Configuration will have to be trimmed down or expanded for different scenarios.
 
 .. code:: sh
 
@@ -279,16 +283,16 @@ If you DNS is externally managed (you do not have access to the configuration fi
 - specify as name ``default._domainkey``
 - enter the text between quotes as value (without any additional quotes!)
 
-If you want to send mail from a subdomain (for instance ``demo.vilfredo.org``) do not forget to add the TXT record containing the DKIM key to the subdomain instead of the main domain!
+If you want to send mail from a subdomain (for instance demo.vilfredo.org) do not forget to add the TXT record containing the DKIM key to the subdomain instead of the main domain!
 
-Moreover, ensure the ``/etc/hostname`` and ``/etc/mailname`` files contains the server domain name (for instance ``vilfredo.org``).
+Moreover, ensure the ``/etc/hostname`` and ``/etc/mailname`` files contains the server domain name (for instance vilfredo.org).
 
 To avoid triggering SpamAssassin filter (rule ``TVD_PH_SUBJ_ACCOUNTS_POST``), also ensure the subject of messages sent by Vilfredo does not match the following regular expression:
 
     /\b(?:(?:re-?)?activat[a-z]*| secure| verify| restore| flagged| limited| unusual| report| notif(?:y| ication)| suspen(?:d| ded| sion)| confirm[a-z]*) (?:[a-z_,-]+ )*?accounts?\b/i
 
 So it should be different from "Vilfredo - Activate Your Account".
-Please note other steps could be needed in order to circumvent spam filters.
+Additionally, please note other steps could be needed in order to circumvent spam filters.
 
 Fine tuning
 ===========
@@ -315,8 +319,7 @@ To create other instances of Vilfredo, enter
 
     /home/vilfredo/vilfredo-setup/scripts/makeinstance [name] [domain] [branch] [mysql database password]
 
-where ``[name]`` could be, for instance, "test", "nightly" or "demo", ``[domain]`` is the assigned domain name, ``[branch]`` is the GIT repository branch from where to download code (usually "master").
-
+where ``[name]`` could be, for instance, "test", "nightly" or "demo", ``[domain]`` is the assigned domain name, ``[branch]`` is the GIT repository branch from where to download code (usually "master").|br|
 A system user will be created with the name specified, with its corresponding folder.
 An additional ``/etc/$NAME`` folder will be created, so this means the instance name cannot match existing folders in the system.
 
