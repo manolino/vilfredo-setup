@@ -1,0 +1,16 @@
+How to create a SSL certificate for a different domain name
+-----------------------------------------------------------
+The following instructions are only valid if you choose to subscribe to a paying SSL certificate with a commercial authority.
+Please note free and fully working SSL certificates can be as well obtained through Let's Encrypt.
+
+Enter
+
+scripts/createcert [domain name]
+
+and enter all required data.
+
+A CSR file (Certificate Signing Request) will be produced. This has to be uploaded to a certificate authority.
+A confirmation email message will then be sent to the email address indicated in the CSR.
+After confirming ownership of the domain, a CRT file will be generated. The intermediate certificates have now to be concatenated to its contents.
+Finally, the CRT file must be uploaded to the /etc/ssl/certs folder on the server, and NGINX has to be restarted.
+Do not forget to backup the KEY file in the /etc/ssl/private folder: it is required to use the certificate.

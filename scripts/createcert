@@ -1,0 +1,15 @@
+#!/bin/bash
+# This script assists in the procedure of creating a CSR (certificate request)
+# to be sent to a recognized authority to request a SSL certificate.
+# Do not forget you can also generate free certificates with Let's Encrypt.
+# Developed by Massimiliano Alessandri <massimiliano.alessandri@gmail.com>
+if [ "$1" == "" ]; then
+	echo "Please specify domain name for certificate to be created."
+	exit
+fi
+openssl genrsa -out /etc/ssl/private/$1.key 2048
+openssl req -new -key /etc/ssl/private/$1.key -out $1.csr
+chgrp ssl-cert /etc/ssl/private/$1.key
+chmod 640 /etc/ssl/private/$1.key
+echo Copy the following and paste into the Certificate Authority control panel:
+cat $1.csr
