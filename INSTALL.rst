@@ -1,17 +1,211 @@
 .. -*- coding: utf-8 -*-
 
-=============
-vilfredo-core
-=============
+This guide is divided into two parts.
 
-This guide explains how to install Vilfredo on a virtual or physical dedicated server.
+The first one explains how to install Vilfredo on an existing server, which is already running other applications, without disrupting the system.
 
-It assumes that you run ``Debian/GNU Linux`` version ``Jessie`` (8.0 or 8.3).
+The second one describes a full setup of a dedicated virtual machine or physical server.
 
-Note: All the following commands have to be executed as user ``root``.
+================================
+Installing on an existing system
+================================
 
-Server setup
-============
+We're assuming you're running a ``Debian/GNU Linux`` based distribution (such as Debian stable or Ubuntu). Vilfredo could likely run on other flavours of Linux, but these are not covered by this guide.
+
+Requirements:
+
+- a MySQL server installation (on the same server or on an external server)
+- a NGINX web server installation (other web servers are not covered by this guide)
+
+WARNING: Do not attempt to run installation if other web servers such as Apache are running on the same server (unless you know how to set up NGINX to run on a different IP address or port). Two web servers on the same IP address and port will conflict and prevent installation of each other.
+
+Run the following commands (please note you'll have to replace the value of some variables: do not copy and paste code to the terminal without revising it first!):
+
+.. code:: sh
+
+    #############################
+    # Set configuration variables
+    #############################
+    # Replace "your_mysql_password" with your chosen "vilfredo" (not "root") MySQL user password
+    # Replace "your_mysql_password" with a secret key chosen by you
+    # Replace "your_vilfredo_salt" with a salt chosen by you
+    YOUR_VILFREDO_MYSQL_PASSWORD=your_mysql_password
+    YOUR_SECRET_KEY=your_secret_key
+    YOUR_VILFREDO_SALT=your_vilfredo_salt
+    # Replace "vilfredo" with the name of system user you want to run Vilfredo
+    NAME=vilfredo
+    #################################################################################
+    # Install required packages (some of them could be already present on the system)
+    #################################################################################
+    sudo apt-get update
+    sudo apt-get install python-virtualenv python-dev libmysqlclient-dev libsqlite3-0 graphviz git gcc sudo nginx ntpdate mysql-server postfix libjansson4 libmatheval1 libyaml-0-2 libzmq3 uuid-dev libcap-dev libssl-dev libssl-doc libpcre3-dev libpcrecpp0
+    # Install customized uwsgi-pypy package
+    wget https://raw.githubusercontent.com/fairdemocracy/vilfredo-setup/master/uwsgi-pypy.deb
+    sudo dpkg -i uwsgi-pypy.deb
+    rm uwsgi-pypy.deb
+    ######################
+    # Install the database
+    ######################
+    wget https://raw.githubusercontent.com/fairdemocracy/vilfredo-setup/master/database.sql
+    # Enter MySQL command line prompt (please enter your MySQL root password to proceed)
+    # Replace "vilfredo" with the name of the database you want to use for Vilfredo installation
+    # Replace "vilfredo_mysql_password" with your chosen "vilfredo" user MySQL password
+    mysql -u root -p
+    DROP DATABASE IF EXISTS $NAME;
+    CREATE DATABASE $NAME;
+    USE $NAME;
+    SET NAMES UTF8;
+    SOURCE database.sql;
+    GRANT USAGE ON *.* TO '$NAME'@'localhost' IDENTIFIED BY PASSWORD 'vilfredo_mysql_password';
+    GRANT SELECT, INSERT, UPDATE, DELETE ON `$NAME`.* TO '$NAME'@'localhost';
+    exit
+    rm database.sql
+    #####################
+    # Install application
+    #####################
+    sudo adduser $NAME
+    sudo -u $NAME bash
+    cd /home/$NAME
+    git clone -b master https://github.com/fairdemocracy/vilfredo-core.git
+    git clone -b master https://github.com/fairdemocracy/vilfredo-client.git
+    virtualenv vilfredo-ve --python=/usr/bin/pypy
+    . vilfredo-ve/bin/activate
+    pip install -U setuptools
+    pip install itsdangerous==0.23
+    pip install argparse==1.2.1
+    pip install alembic==0.7.4
+    pip install Flask-Script==0.6.7
+    pip install Flask-Migrate==1.3.0
+    pip install Pillow==2.8.1
+    pip install requests==2.7.0
+    pip install ipython==4.0.0
+    pip install Flask==0.10
+    pip install Flask-Mail==0.8.2
+    pip install Flask-Babel==0.8
+    pip install Flask-Login==0.2.6
+    pip install SQLAlchemy==0.8.2
+    pip install Flask-SQLAlchemy==1.0
+    pip install Flask-CDN==1.2.1
+    pip install flask-util-js==0.2.19
+    pip install MySQL-python==1.2.5
+    pip install pyparsing==1.5.7
+    pip install pydot==1.0.2
+    # Create symbolic links
+    ln -sf /home/$NAME/vilfredo-client/static /home/$NAME/vilfredo-core/VilfredoReloadedCore/static
+    ln -sf /home/$NAME/vilfredo-client/templates /home/$NAME/vilfredo-core/VilfredoReloadedCore/templates
+    exit
+    sudo chgrp www-data /home/$NAME/vilfredo-client/static
+    # Move configuration files to a centralized folder
+    sudo mkdir /etc/$NAME
+    sudo chown $NAME:www-data /etc/$NAME
+    sudo -u $NAME bash
+    cp /home/$NAME/vilfredo-setup/settings.cfg /etc/$NAME
+    replace www.vilfredo.org $DOMAIN -- /etc/$NAME/settings.cfg
+    replace https https -- /etc/$NAME/settings.cfg
+    replace vilfredo_mysql_password $YOUR_VILFREDO_MYSQL_PASSWORD -- /etc/$NAME/settings.cfg
+    replace secret_key $YOUR_SECRET_KEY -- /etc/$NAME/settings.cfg
+    replace vilfredo_salt $YOUR_VILFREDO_SALT -- /etc/$NAME/settings.cfg
+    chown $NAME /etc/$NAME/settings.cfg
+    ln -sf /etc/$NAME/settings.cfg /home/$NAME/vilfredo-core/VilfredoReloadedCore
+    chown -h $NAME /home/$NAME/vilfredo-core/VilfredoReloadedCore/settings.cfg
+    mv /home/$NAME/vilfredo-client/static/js/settings.js /etc/$NAME
+    replace www.vilfredo.org $DOMAIN -- /etc/$NAME/settings.js
+    replace https http -- /etc/$NAME/settings.js
+    ln -s /etc/$NAME/settings.js /home/$NAME/vilfredo-client/static/js
+    cp /home/$NAME/vilfredo-setup/logging_debug.conf /etc/$NAME
+    ln -s /etc/$NAME/logging_debug.conf /home/$NAME/vilfredo-core/VilfredoReloadedCore
+    mkdir /var/log/$NAME
+    chown $NAME /var/log/$NAME
+    # This file is not needed in this setup - delete it if it has been downloaded from repository
+    rm /home/$NAME/vilfredo-core/VilfredoReloadedCore/main.py
+    chown -R $NAME:www-data /home/$NAME
+    ############################
+    # Configure NGINX web server
+    ############################
+    cat > /etc/nginx/sites-available/$NAME <<EOF
+    server {
+      listen 80;
+      listen [::]:80;
+
+      server_name $DOMAIN;
+
+      location /static {
+        root /home/$NAME/vilfredo-client/static;
+        try_files $uri @vilfredo;
+      }
+      location /templates {
+        root /home/$NAME/vilfredo-client/static/templates;
+        try_files $uri @vilfredo;
+      }
+      location / {
+        try_files $uri @vilfredo;
+      }
+      location @vilfredo {
+        include uwsgi_params;
+        uwsgi_pass unix:/tmp/uwsgi_$NAME.sock;
+      }
+      # Enables GZIP compression if not already enabled
+      gzip on;
+      gzip_disable "msie6";
+      gzip_vary on;
+      gzip_proxied any;
+      gzip_comp_level 9;
+      gzip_buffers 16 8k;
+      gzip_http_version 1.1;
+      gzip_types text/plain text/css application/json application/javascript application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+
+    }
+    EOF
+    sudo ln -sf /etc/nginx/sites-available/$NAME.conf /etc/nginx/sites-enabled
+    sudo cat > /etc/uwsgi-pypy/apps-available/$NAME.ini <<EOF
+    [uwsgi]
+    # Note: We cannot use /var/run/uwsgi_$NAME.sock due to permissions issues
+    socket=/tmp/uwsgi_$NAME.sock
+    chmod-socket=666
+    abstract-socket=false
+
+    master=true
+    workers=2
+
+    uid=$NAME
+    gid=www-data
+
+    post-buffering=8192
+
+    vhost=true
+    chdir=/home/$NAME
+
+    # Configuration when running under Python
+    pp=/home/$NAME/vilfredo-core/VilfredoReloadedCore
+    venv=/home/$NAME/vilfredo-ve
+    module=main
+    callable=app
+
+    # Configuration when running under PyPy
+    pypy-lib=/usr/lib/pypy/libpypy-c.so
+    pypy-pp=/home/$NAME/vilfredo-core
+    pypy-home=/home/$NAME/vilfredo-ve
+    pypy-wsgi=VilfredoReloadedCore:app
+    EOF
+    sudo ln -sf /etc/uwsgi-pypy/apps-available/$NAME.ini /etc/uwsgi-pypy/apps-enabled
+    service uwsgi-pypy restart
+    service php5-fpm restart
+    service nginx restart
+
+=====================================
+Full virtual or physical server setup
+=====================================
+
+In the case you've got an available virtual machine or physical server to devote to Vilfredo, here follows how to install the whole system which is currently running on www.vilfredo.org
+
+It includes:
+
+- partitioning guide (for LVM setups and virtual machines where partitioning has not been performed before)
+- a PHPMyAdmin installation to easily manage the MySQL database through a web-based interface
+- settings DNS adding the SPF and DKIM records
+
+Partitioning guide
+==================
 
 First of all, on some servers there could be the need to define partitions on LVM to take advantage of additional disk space.
 
