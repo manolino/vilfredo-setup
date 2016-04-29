@@ -56,7 +56,7 @@ Run the following commands (please note you'll have to replace the value of some
     USE $NAME;
     SET NAMES UTF8;
     SOURCE database.sql;
-    GRANT USAGE ON *.* TO '$NAME'@'localhost' IDENTIFIED BY PASSWORD 'vilfredo_mysql_password';
+    GRANT USAGE ON *.* TO '$NAME'@'localhost' IDENTIFIED BY 'vilfredo_mysql_password';
     GRANT SELECT, INSERT, UPDATE, DELETE ON `$NAME`.* TO '$NAME'@'localhost';
     exit
     rm database.sql
@@ -279,7 +279,7 @@ Before installing the application, create the MySQL database schema:
     SET NAMES UTF8;
     SOURCE /home/vilfredo/vilfredo-setup/database.sql;
     # Replace "vilfredo_mysql_password" with your chosen "vilfredo" user MySQL password
-    GRANT USAGE ON *.* TO 'vilfredo'@'localhost' IDENTIFIED BY PASSWORD 'vilfredo_mysql_password';
+    GRANT USAGE ON *.* TO 'vilfredo'@'localhost' IDENTIFIED BY 'vilfredo_mysql_password';
     GRANT SELECT, INSERT, UPDATE, DELETE ON `vilfredo`.* TO 'vilfredo'@'localhost';
     exit
 
