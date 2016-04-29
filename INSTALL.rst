@@ -1,14 +1,14 @@
 .. -*- coding: utf-8 -*-
 
-This guide is divided into two parts.
+This guide is only meant for system administrators who want to install a production instance of Vilfredo on an already existing server or a brand new virtual machine or dedicated box.
 
-The first one explains how to install Vilfredo on an existing server, which is already running other applications, without disrupting the system.
-
-The second one describes a full setup of a dedicated virtual machine or physical server.
+If you're just interested running a development instance to contribute to the project, download the ``install.sh`` script instead and skip this guide.
 
 ================================
 Installing on an existing system
 ================================
+
+This guide explains how to install Vilfredo on an existing server, which is already running other applications, without disrupting the system.
 
 We're assuming you're running a ``Debian/GNU Linux`` based distribution (such as Debian stable or Ubuntu). Vilfredo could likely run on other flavours of Linux, but these are not covered by this guide.
 
