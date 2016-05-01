@@ -1,6 +1,6 @@
 .. -*- coding: utf-8 -*-
 
-This guide is only meant for system administrators who want to install a production instance of Vilfredo on an already existing server or a brand new virtual machine or dedicated box.
+This guide is only meant for system administrators who want to install a production instance of Vilfredo on an already existing server or a brand new virtual machine or dedicated box. Not to risk installing it over a previous instance it calls it vilfredo_nightly.
 
 If you're just interested running a development instance to contribute to the project, download the ``install.sh`` script instead and skip this guide.
 
@@ -32,8 +32,8 @@ Run the following commands (please note you'll have to replace the value of some
     YOUR_VILFREDO_MYSQL_PASSWORD=your_mysql_password
     YOUR_SECRET_KEY=your_secret_key
     YOUR_VILFREDO_SALT=your_vilfredo_salt
-    # Replace "vilfredo" with the name of system user you want to run Vilfredo
-    NAME=vilfredo
+    # Replace "vilfredo_nightly" with the name of system user you want to run Vilfredo
+    NAME=vilfredo_nightly
     #################################################################################
     # Install required packages (some of them could be already present on the system)
     #################################################################################
@@ -48,8 +48,8 @@ Run the following commands (please note you'll have to replace the value of some
     ######################
     wget https://raw.githubusercontent.com/fairdemocracy/vilfredo-setup/master/database.sql
     # Enter MySQL command line prompt (please enter your MySQL root password to proceed)
-    # Replace "vilfredo" with the name of the database you want to use for Vilfredo installation
-    # Replace "vilfredo_mysql_password" with your chosen "vilfredo" user MySQL password
+    # Replace "vilfredo_nightly" with the name of the database you want to use for Vilfredo installation
+    # Replace "vilfredo_mysql_password" with your chosen "vilfredo_nightly" user MySQL password
     mysql -u root -p
     DROP DATABASE IF EXISTS $NAME;
     CREATE DATABASE $NAME;
@@ -200,7 +200,7 @@ In the case you've got an available virtual machine or physical server to devote
 
 It includes:
 
-- partitioning guide (for LVM setups and virtual machines where partitioning has not been performed before)
+- partitioning guide (for LVM -logical volume manager- setups and virtual machines where partitioning has not been performed before)
 - a PHPMyAdmin installation to easily manage the MySQL database through a web-based interface
 - settings DNS adding the SPF and DKIM records
 
@@ -273,9 +273,9 @@ Before installing the application, create the MySQL database schema:
 
     # This assumes the "root" password has been stored in .my.cnf file
     mysql
-    DROP DATABASE IF EXISTS vilfredo;
-    CREATE DATABASE vilfredo;
-    USE vilfredo;
+    DROP DATABASE IF EXISTS vilfredo; 
+    CREATE DATABASE vilfredo; 
+    USE vilfredo; 
     SET NAMES UTF8;
     SOURCE /home/vilfredo/vilfredo-setup/database.sql;
     # Replace "vilfredo_mysql_password" with your chosen "vilfredo" user MySQL password
@@ -355,14 +355,18 @@ then add some symbolic links in Vilfredo core pointing to static files and templ
     EOF
 
     chmod 600 /root/.my.cnf
+    
     # Move configuration files to a centralized folder
+    
     mkdir /etc/vilfredo
     cp /home/vilfredo/vilfredo-setup/settings.cfg /etc/vilfredo/settings.cfg
     mv /home/vilfredo/vilfredo-client/static/js/settings.js /etc/vilfredo
     ln -s /etc/vilfredo/settings.js /home/vilfredo/vilfredo-client/static/js
+    
     # Replace YOUR_VILFREDO_MYSQL_PASSWORD with your chosen "vilfredo" (not "root") MySQL user password
     # Replace YOUR_SECRET_KEY with a secret key chosen by you
     # Replace YOUR_VILFREDO_SALT with a salt chosen by you
+    
     replace vilfredo_mysql_password YOUR_VILFREDO_MYSQL_PASSWORD -- /etc/vilfredo/settings.cfg
     replace secret_key YOUR_SECRET_KEY -- /etc/vilfredo/settings.cfg
     replace vilfredo_salt YOUR_VILFREDO_SALT -- /etc/vilfredo/settings.cfg
