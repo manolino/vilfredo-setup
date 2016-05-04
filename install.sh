@@ -56,8 +56,7 @@ pip install MySQL-python==1.2.5
 pip install pyparsing==1.5.7
 pip install pydot==1.0.2
 python setup.py develop
-cd ..
-. vilfredo-ve/bin/deactivate
+deactivate
 cd vilfredo-core/VilfredoReloadedCore
 wget https://raw.githubusercontent.com/fairdemocracy/vilfredo-setup/master/settings.cfg
 ln -sf ../../vilfredo-client/static .
